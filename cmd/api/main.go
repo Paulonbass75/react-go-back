@@ -8,8 +8,8 @@ import (
 	"log"
 	"net/http"
 	"time"
-	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
+	// "database/sql"
+	// _ "github.com/go-sql-driver/mysql"
 )
 
 const port = 8080
@@ -31,7 +31,7 @@ func main() {
 	var app application
 
 	// ...read from command line
-	// flag.StringVar(&app.DSN, "dsn", "host=localhost port=3306 user=root password=root dbname=amd sslmode=disable timezone=UTC connect_timeout=5", "MySQL Connection String")
+	flag.StringVar(&app.DSN, "dsn", "host=localhost port=5432 user=postgres password=postgres dbname=amd sslmode=disable timezone=UTC connect_timeout=5", "Postgres Connection String")
 	flag.StringVar(&app.JWTSecret, "jwt-secret", "verysecret", "signing secret")
 	flag.StringVar(&app.JWTIssuer, "jwt-issuer", "example.com", "signing issuer")
 	flag.StringVar(&app.JWTAudience, "jwt-audience", "example.com", "signing audience")
@@ -41,21 +41,12 @@ func main() {
 	flag.Parse()
 
 	// ...set up database
-	// conn, err := app.connectToDB()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// app.DB = &dbrepo.PostgresDBRepo{DB: conn}
-	// defer app.DB.Connection().Close()
-
-	// ...set up database
 	conn, err := app.connectToDB()
 	if err != nil {
 		log.Fatal(err)
 	}
-	app.DB = &dbrepo.MySQLDBRepo{DB: conn}
+	app.DB = &dbrepo.PostgresDBRepo{DB: conn}
 	defer app.DB.Connection().Close()
-
 
 	// ...set up authentication
 	app.auth = Auth{
